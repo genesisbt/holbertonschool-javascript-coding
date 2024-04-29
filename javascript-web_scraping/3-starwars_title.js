@@ -10,9 +10,18 @@ request.get(apiUrl, (error, response, body) => {
     console.error(error);
     return;
   }
-  else {
-    const movie = JSON.parse(body);
-    console.log(movie.title);
-  }
-
+    else {
+        try {
+            const movie = JSON.parse(body);
+            if (movie.title) {
+                console.log(movie.title);
+            } 
+            else {
+                console.error('Movie title not found');
+            }
+        } 
+        catch (parseError) {
+            console.error('Error parsing JSON:', parseError);
+        }
+    }
 });
