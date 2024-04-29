@@ -10,7 +10,9 @@ request.get(apiUrl, (error, response, body) => {
     console.error(error);
     return;
   }
-  else
-  const movie = JSON.parse(body);
-  console.log(movie.title);
+  else {
+    const movie = JSON.parse(body);
+    console.log(movie.title);
+  }
+
 });
