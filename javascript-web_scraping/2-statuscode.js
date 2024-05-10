@@ -2,13 +2,14 @@
 const request = require('request');
 const url = process.argv[2];
 
-function getstatus (url) {
+function getStatus (url) {
   request.get(url, (error, response) => {
     if (error) {
-      console.log(error);
+      console.error(error);
       return;
     }
-    console.log('code: ' + response.statusCode);
+    console.log('code:', response.statusCode);
   });
 }
-getstatus(url);
+
+getStatus(url);
