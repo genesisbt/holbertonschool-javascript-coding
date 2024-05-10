@@ -4,7 +4,6 @@ const url = process.argv[2];
 
 function getstatus (url) {
   request.get(url, (error, response) => {
-    
     if (error) {
       console.log(error);
       return;
