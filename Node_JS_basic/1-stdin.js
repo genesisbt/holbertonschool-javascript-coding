@@ -9,8 +9,6 @@ console.log('Welcome to Holberton School, what is your name?');
 
 rl.question('', (inp) => {
   console.log(`Your name is: ${inp}`);
-});
-
-rl.on('close', () => {
   console.log('This important software is now closing');
+  rl.close();
 });
