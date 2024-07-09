@@ -1,40 +1,24 @@
 #!/usr/bin/node
 
 const request = require('request');
-const apiUrl = process.argv[2]; // Fetch API URL from command line argument
+const url = process.argv[2];
 
-if (!apiUrl) {
-  console.error('Error: API URL is missing');
-  process.exit(1);
-}
-
-request(apiUrl, { json: true }, (err, res, body) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-
-  // Filter tasks that are completed
-  const completedTasks = body.filter(task => task.completed);
-
-  // Initialize an object to count tasks completed by each user ID
-  const tasksCompletedByUser = {};
-
-  // Count tasks completed by each user
-  completedTasks.forEach(task => {
-    const userId = task.userId.toString(); // Convert userId to string for consistent key format
-    if (tasksCompletedByUser[userId]) {
-      tasksCompletedByUser[userId]++;
-    } else {
-      tasksCompletedByUser[userId] = 1;
+function getCompletedTasks () {
+  request(url, { json: true }, (error, response, body) => {
+    if (error) {
+      console.log(error);
+      return;
     }
+    const completedTasks = {};
+    body.forEach(task => {
+      if (task.completed) {
+        if (!completedTasks[task.userId]) {
+          completedTasks[task.userId] = 0;
+        }
+        completedTasks[task.userId]++;
+      }
+    });
+    console.log(completedTasks);
   });
-
-  // Prepare the output in the specified format
-  const output = {};
-  Object.keys(tasksCompletedByUser).forEach(userId => {
-    output[`'${userId}'`] = tasksCompletedByUser[userId];
-  });
-
-  console.log(JSON.stringify(output));
-});
+}
+getCompletedTasks();
