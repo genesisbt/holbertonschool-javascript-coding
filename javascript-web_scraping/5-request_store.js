@@ -1,34 +1,28 @@
 #!/usr/bin/node
 
-const request = require('request');
+const axios = require('axios');
 const fs = require('fs');
 
 const url = process.argv[2];
 const filePath = process.argv[3];
 
-function getContent(url, filePath) {
-  request(url, { encoding: null }, (error, response, body) => {
-    if (error) {
-      console.error('Error fetching webpage:', error);
-      return;
+async function getContent(url, filepath) {
+  try {
+    const { data } = await axios.get(url, { responseType: 'text' });
+    
+    fs.writeFileSync(filePath, data, 'utf-8');
+    console.log(`Webpage content successfully saved to ${filePath}`);
+    
+    if (data.trim() === 'C is fun!') {
+      console.log('C is fun!');
+    } else {
+      console.error('Expected output not found or incorrect in fetched content.');
+      process.exit(1);
     }
-
-    let text = '';
-    try {
-      text = body.toString('utf8');
-    } catch (e) {
-      console.error('Failed to convert body to UTF-8', e);
-      return;
-    }
-
-    fs.writeFile(filePath, text, 'utf8', (err) => {
-      if (err) {
-        console.error('Error writing file:', err);
-        return;
-      }
-      console.log(`Webpage content successfully saved to ${filePath}`);
-    });
-  });
+  } catch (error) {
+    console.error('Error fetching webpage:', error);
+    process.exit(1);
+  }
 }
 
 getContent(url, filePath);
