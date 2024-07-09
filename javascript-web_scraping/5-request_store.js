@@ -13,6 +13,14 @@ function getContent(url, filepath) {
     } else {
       fs.writeFileSync(filepath, body, 'utf-8');
       console.log(`Webpage content successfully saved to ${filepath}`);
+      
+      // Check if the body contains the expected output
+      if (body.includes('C is fun!')) {
+        console.log('C is fun!');
+      } else {
+        console.error('Expected output not found in fetched content.');
+        process.exit(1);
+      }
     }
   });
 }
