@@ -1,38 +1,42 @@
 const fs = require('fs');
+const path = require('path');
 
-function countStudents(filePath) {
+const countStudents = (filePath) => {
+  /* eslint-disable no-param-reassign */
+  filePath = path.normalize(filePath);
+
   return new Promise((resolve, reject) => {
-    let data = '';
-    let numberOfStudents = 0;
-    let currentLine = '';
-
-    const stream = fs.createReadStream(filePath, { encoding: 'utf-8' });
-
-    stream.on('data', chunk => {
-      data += chunk;
-      currentLine += chunk;
-      if (currentLine.includes('\n')) {
-        currentLine = currentLine.replace(/^\s+|\s+$/gm, ''); // Remove leading/trailing whitespace
-        if (currentLine.trim() !== '') { // Check if the line is not empty
-          numberOfStudents++;
-          const fields = currentLine.split(',');
-          // Process fields as needed
-          // For demonstration, logging the last field value
-          console.log(fields[fields.length - 1]);
-        }
-        currentLine = ''; // Reset currentLine after processing
+    fs.readFile(filePath, 'utf-8', (err, data) => {
+      if (err) {
+        reject(new Error('Cannot load the database'));
+        return;
       }
-    });
 
-    stream.on('end', () => {
-      console.log(`Total number of students: ${numberOfStudents}`);
+      const dataArray = data.trim().split('\n').map((line) => line.split(','));
+      const validDataArray = dataArray.filter((line) => line.length > 1);
+      const numberOfStudents = validDataArray.length - 1;
+      console.log(`Number of students: ${numberOfStudents}`);
+
+      const fields = {};
+
+      validDataArray.slice(1).forEach((line) => {
+        const fieldName = line[3];
+        const firstName = line[0].trim();
+        if (!fields[fieldName]) {
+          fields[fieldName] = [];
+        }
+        fields[fieldName].push(firstName);
+      });
+
+      delete fields.field;
+      for (const fieldName in fields) {
+        if (Object.prototype.hasOwnProperty.call(fields, fieldName)) {
+          console.log(`Number of students in ${fieldName}: ${fields[fieldName].length}. List: ${fields[fieldName].join(', ')}`);
+        }
+      }
       resolve();
     });
-
-    stream.on('error', err => {
-      reject(new Error("Cannot load the database"));
-    });
   });
-}
+};
 
 module.exports = countStudents;
